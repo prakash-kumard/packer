@@ -17,8 +17,4 @@ echo "UseDNS no" >> /etc/ssh/sshd_config
 apt-get -y autoremove
 apt-get -y clean
 
-apt-get install apt-utils
-apt-get install bash-completion
-apt-get install ntp
-apt-get install coreutils
-apt-get install open-vm-tools
+apt-get -y install docker.io
