@@ -1,5 +1,9 @@
 #!/bin/bash
 
+exec > /var/log/postinstall.log 2>&1
+
+echo "BEGIN_POSTINSTALL"
+
 set -e
 set -x
 
@@ -18,3 +22,5 @@ apt-get -y autoremove
 apt-get -y clean
 
 apt-get -y install docker.io
+
+echo "END_POSTINSTALL"

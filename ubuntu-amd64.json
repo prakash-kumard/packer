@@ -1,6 +1,8 @@
 {
   "variables" : {
-        "VM_NAME" : "packer-ubuntu14.04.4-amd64"
+        "VM_NAME" : "packer-ubuntu14.04.4-amd64",
+        "USER_NAME" : "hcoeuser",
+        "PASSWORD" : "hcoeuser"
         },
   "builders": [{
      "name": "ubuntu-14.04.4.amd64.vmware",
@@ -9,8 +11,8 @@
      "iso_url": "ubuntu-14.04.4-server-amd64.iso",
      "iso_checksum": "2ac1f3e0de626e54d05065d6f549fa3a",
      "iso_checksum_type": "md5",
-     "ssh_username": "hcoeuser",
-     "ssh_password": "hcoeuser",
+     "ssh_username": "{{user `USER_NAME`}}",
+     "ssh_password": "{{user `PASSWORD`}}",
      "ssh_port": 22,
      "ssh_timeout": "30m",
      "http_directory": "http",
@@ -32,8 +34,8 @@
         " keyboard-configuration/layout=USA<wait>",
         " keyboard-configuration/variant=USA<wait>",
         " locale=en_US<wait>",
-        " netcfg/get_hostname=localhost<wait>",
-        " netcfg/get_domain=hpe.com<wait>",
+        " netcfg/get_hostname=ubuntu-1404<wait>",
+        " netcfg/get_domain=vagrantup.com<wait>",
         " noapic<wait>",
         " preseed/url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/preseed.cfg<wait>",
         " -- <wait>",
@@ -47,7 +49,7 @@
      "remote_username": "bfftcesxusr",
      "remote_password": "happy.new.year-2016",
      "remote_type": "esx5",
-     "shutdown_command": "echo 'hcoeuser'|sudo -S shutdown -P now",
+     "shutdown_command": "echo \"{{user `USER_NAME`}}\"|sudo -S shutdown -P now",
      "format": "ova",
      "tools_upload_flavor": "linux",
      "vmx_data": {
@@ -67,13 +69,52 @@
      }
     }],
     "provisioners": [
-     { "type": "file", "source": "scripts/firstboot.sh", "destination": "/tmp/firstboot.sh"},
      { "type": "shell",
-     "execute_command": "echo 'hcoeuser'|sudo -S sh '{{.Path}}'",
-     "scripts": [
-       "scripts/base.sh",
-       "scripts/postinstall.sh"
-    ]}
-    ]
+     "execute_command": "echo  \"{{user `USER_NAME`}}\"|sudo -S sh '{{.Path}}'",
+     "inline": [
+        "mkdir -p /opt/hcoe/startup",
+        "mkdir -p /opt/hcoe/kubernetes",
+        "mkdir -p /opt/hcoe/agent"
+     ]
+     },
+     { "type": "file", "source": "scripts/control/firstboot.sh", "destination": "/tmp/firstboot.sh"},
+     { "type": "shell",
+       "execute_command": "echo  \"{{user `USER_NAME`}}\"|sudo -S sh '{{.Path}}'",
+       "inline": [
+          "mv /tmp/firstboot.sh /etc/init.d/firstboot.sh",
+          "chown root:root /etc/init.d/firstboot.sh",
+          "chmod 755 /etc/init.d/firstboot.sh"
+       ]
+     },
+     { "type": "file", "source": "scripts/control/rc.local", "destination": "/tmp/rc.local"},
+     { "type": "shell",
+       "execute_command": "echo  \"{{user `USER_NAME`}}\"|sudo -S sh '{{.Path}}'",
+       "inline": [
+          "mv -f /tmp/rc.local /etc/rc.local",
+          "chown root:root /etc/rc.local",
+          "chmod 755 /etc/rc.local"
+       ]
+     },
+     { "type": "file", "source": "scripts/startup", "destination": "/tmp/startup"},
+     { "type": "shell",
+     "execute_command": "echo  \"{{user `USER_NAME`}}\"|sudo -S sh '{{.Path}}'",
+     "inline": [
+         "mv /tmp/startup /opt/hcoe/",
+         "chmod -R root:root /opt/hcoe/*",
+         "chmod -R 755 /opt/hcoe/*"
+         ]
+     },
+     { "type": "shell",
+     "execute_command": "echo  \"{{user `USER_NAME`}}\"|sudo -S sh '{{.Path}}'",
+     "script": "scripts/control/postinstall.sh"
     }
+    ],
+    "post-processors": [
+     { "type": "shell-local",
+       "inline": [
+          "ls -ltr \"{{user `VM_NAME`}}\"\/\"{{user `VM_NAME`}}\".ova\/\"{{user `VM_NAME`}}\".ova",
+          "chmod 755 \"{{user `VM_NAME`}}\"\/\"{{user `VM_NAME`}}\".ova\/\"{{user `VM_NAME`}}\".ova"
+        ]
+     }
+    ]
 }
