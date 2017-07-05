@@ -69,6 +69,9 @@
      }
     }],
     "provisioners": [
+     { "type": "shell-local",
+       "command": "rm -f \"{{user `VM_NAME`}}\"\/\"{{user `VM_NAME`}}\".ova\/\"{{user `VM_NAME`}}\".ova"
+     },
      { "type": "shell",
      "execute_command": "echo  \"{{user `USER_NAME`}}\"|sudo -S sh '{{.Path}}'",
      "inline": [
@@ -100,7 +103,7 @@
      "execute_command": "echo  \"{{user `USER_NAME`}}\"|sudo -S sh '{{.Path}}'",
      "inline": [
          "mv /tmp/startup /opt/hcoe/",
-         "chmod -R root:root /opt/hcoe/*",
+         "chown -R root:root /opt/hcoe/*",
          "chmod -R 755 /opt/hcoe/*"
          ]
      },
@@ -115,6 +118,21 @@
           "ls -ltr \"{{user `VM_NAME`}}\"\/\"{{user `VM_NAME`}}\".ova\/\"{{user `VM_NAME`}}\".ova",
           "chmod 755 \"{{user `VM_NAME`}}\"\/\"{{user `VM_NAME`}}\".ova\/\"{{user `VM_NAME`}}\".ova"
         ]
-     }
+     },
+     { "type": "vsphere",
+      "host": "ftcwvc10g.ftc.hpeswlab.net",
+      "username": "HPESWLAB\\_bfftcvcusr",
+      "password": "happy.new.year-2016",
+      "datacenter": "HFprod",
+      "cluster": "ftcvhfesx01h.ftc.hpeswlab.net",
+      "datastore": "p02_hfprod_L00",
+      "vm_name": "ubuntu_14.04_64",
+      "insecure": "true",
+      "disk_mode": "thin",
+      "vm_network": "VM Network",
+      "options": [
+         "--powerOn"
+      ]
+    }
     ]
 }
