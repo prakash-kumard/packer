@@ -12,9 +12,11 @@
 # By default this script does nothing.
 
 if [ -x /etc/init.d/firstboot.sh ]; then
-   /etc/init.d/firstboot.sh
+   sudo /etc/init.d/firstboot.sh
    ES=$?
    [ "$ES" = "0" ] && mv /etc/init.d/firstboot.sh /etc/init.d/firstboot.sh.bak
+else
+   sudo /etc/init.d/subsboot.sh
 fi
 
 exit 0

@@ -1,6 +1,7 @@
 #!/bin/bash
 
-exec > /var/log/postinstall.log 2>&1
+
+#exec > /var/log/postinstall.log 2>&1
 
 echo "BEGIN_POSTINSTALL"
 

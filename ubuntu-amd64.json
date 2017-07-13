@@ -1,138 +1,173 @@
 {
-  "variables" : {
+    "variables" : {
         "VM_NAME" : "packer-ubuntu14.04.4-amd64",
         "USER_NAME" : "hcoeuser",
-        "PASSWORD" : "hcoeuser"
-        },
-  "builders": [{
-     "name": "ubuntu-14.04.4.amd64.vmware",
-     "type": "vmware-iso",
-     "guest_os_type": "ubuntu-64",
-     "iso_url": "ubuntu-14.04.4-server-amd64.iso",
-     "iso_checksum": "2ac1f3e0de626e54d05065d6f549fa3a",
-     "iso_checksum_type": "md5",
-     "ssh_username": "{{user `USER_NAME`}}",
-     "ssh_password": "{{user `PASSWORD`}}",
-     "ssh_port": 22,
-     "ssh_timeout": "30m",
-     "http_directory": "http",
-     "headless": "false",
-     "boot_wait": "5s",
-     "boot_command": [
-        "<esc><wait>",
-        "<esc><wait>",
-        "<enter><wait>",
-        "/install/vmlinuz<wait>",
-        " auto<wait>",
-        " console-setup/ask_detect=false<wait>",
-        " console-setup/layoutcode=us<wait>",
-        " console-setup/modelcode=pc105<wait>",
-        " debian-installer=en_US<wait>",
-        " fb=false<wait>",
-        " initrd=/install/initrd.gz<wait>",
-        " kbd-chooser/method=us<wait>",
-        " keyboard-configuration/layout=USA<wait>",
-        " keyboard-configuration/variant=USA<wait>",
-        " locale=en_US<wait>",
-        " netcfg/get_hostname=ubuntu-1404<wait>",
-        " netcfg/get_domain=vagrantup.com<wait>",
-        " noapic<wait>",
-        " preseed/url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/preseed.cfg<wait>",
-        " -- <wait>",
-        "<enter><wait>"
-    ],
-     "vm_name" : "{{user `VM_NAME`}}",
-     "disk_size": "102400",
-     "disk_type_id": "thin",
-     "remote_host": "ftcvhfesx01h.ftc.hpeswlab.net",
-     "remote_datastore": "p02_hfprod_L00",
-     "remote_username": "bfftcesxusr",
-     "remote_password": "happy.new.year-2016",
-     "remote_type": "esx5",
-     "shutdown_command": "echo \"{{user `USER_NAME`}}\"|sudo -S shutdown -P now",
-     "format": "ova",
-     "tools_upload_flavor": "linux",
-     "vmx_data": {
-        "config.version": 8,
-        "virtualHW.version": 8,
-        "ethernet0.networkName": "VM Network",
-        "ethernet0.virtualDev": "e1000",
-        "memsize": "16384",
-        "numvcpus": "4",
-        "cpuid.coresPerSocket": "1",
-        "ide0:0.fileName": "disk.vmdk",
-        "ide0:0.present": "TRUE",
-        "ide0:0.redo": "",
-        "scsi0:0.present": "FALSE",
-        "RemoteDisplay.vnc.enabled": "TRUE",
-        "RemoteDisplay.vnc.port":  "5900"
-     }
+        "PASSWORD" : "hcoeuser",
+        "VCENTER_HOST" : "15.116.7.121",
+        "VCENTER_USER" : "bfftcvcusr@vsphere.local",
+        "VCENTER_PASSWORD" : "Happy.new.year-2016",
+        "DATACENTER_NAME" : "Datacenter",
+        "ESXi_HOST" : "15.116.2.244",
+        "ESXi_USER" : "bfftcvcusr",
+        "ESXi_PASSWORD" : "Happy.new.year-2016",
+        "ESXi_NETWORK" : "VM Network",
+        "ESXi_DATASTORE" : "datastore2"
+    },
+    "builders": [{
+        "name": "ubuntu-14.04.4.amd64.vmware",
+        "type": "vmware-iso",
+        "guest_os_type": "ubuntu-64",
+        "iso_url": "ubuntu-14.04.4-server-amd64.iso",
+        "iso_checksum": "2ac1f3e0de626e54d05065d6f549fa3a",
+        "iso_checksum_type": "md5",
+        "ssh_username": "{{user `USER_NAME`}}",
+        "ssh_password": "{{user `PASSWORD`}}",
+        "ssh_port": 22,
+        "ssh_timeout": "30m",
+        "http_directory": "http",
+        "headless": "false",
+        "boot_wait": "10s",
+        "boot_command": [
+            "<esc><wait>",
+            "<esc><wait>",
+            "<enter><wait>",
+            "/install/vmlinuz<wait>",
+            " auto<wait>",
+            " console-setup/ask_detect=false<wait>",
+            " console-setup/layoutcode=us<wait>",
+            " console-setup/modelcode=pc105<wait>",
+            " debian-installer=en_US<wait>",
+            " fb=false<wait>",
+            " initrd=/install/initrd.gz<wait>",
+            " kbd-chooser/method=us<wait>",
+            " keyboard-configuration/layout=USA<wait>",
+            " keyboard-configuration/variant=USA<wait>",
+            " locale=en_US<wait>",
+            " netcfg/get_hostname=ubuntu-1404<wait>",
+            " netcfg/get_domain=vagrantup.com<wait>",
+            " noapic<wait>",
+            " preseed/url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/preseed.cfg<wait>",
+            " -- <wait>",
+            "<enter><wait>"
+        ],
+        "vm_name" : "{{user `VM_NAME`}}",
+        "disk_size": "102400",
+        "disk_type_id": "thin",
+        "remote_host": "{{user `ESXi_HOST`}}",
+        "remote_datastore": "{{user `ESXi_DATASTORE`}}",
+        "remote_username": "{{user `ESXi_USER`}}",
+        "remote_password": "{{user `ESXi_PASSWORD`}}",
+        "remote_type": "esx5",
+        "shutdown_command": "echo \"{{user `USER_NAME`}}\"|sudo -S shutdown -P now",
+        "format": "ova",
+        "tools_upload_flavor": "linux",
+        "vmx_data": {
+            "config.version": 8,
+            "virtualHW.version": 8,
+            "ethernet0.networkName": "{{user `ESXi_NETWORK`}}",
+            "ethernet0.virtualDev": "e1000",
+            "memsize": "16384",
+            "numvcpus": "4",
+            "cpuid.coresPerSocket": "1",
+            "ide0:0.fileName": "disk.vmdk",
+            "ide0:0.present": "TRUE",
+            "ide0:0.redo": "",
+            "scsi0:0.present": "FALSE",
+            "RemoteDisplay.vnc.enabled": "TRUE",
+            "RemoteDisplay.vnc.port":  "5900"
+        }
     }],
     "provisioners": [
-     { "type": "shell-local",
-       "command": "rm -f \"{{user `VM_NAME`}}\"\/\"{{user `VM_NAME`}}\".ova\/\"{{user `VM_NAME`}}\".ova"
-     },
-     { "type": "shell",
-     "execute_command": "echo  \"{{user `USER_NAME`}}\"|sudo -S sh '{{.Path}}'",
-     "inline": [
-        "mkdir -p /opt/hcoe/startup",
-        "mkdir -p /opt/hcoe/kubernetes",
-        "mkdir -p /opt/hcoe/agent"
-     ]
-     },
-     { "type": "file", "source": "scripts/control/firstboot.sh", "destination": "/tmp/firstboot.sh"},
-     { "type": "shell",
-       "execute_command": "echo  \"{{user `USER_NAME`}}\"|sudo -S sh '{{.Path}}'",
-       "inline": [
-          "mv /tmp/firstboot.sh /etc/init.d/firstboot.sh",
-          "chown root:root /etc/init.d/firstboot.sh",
-          "chmod 755 /etc/init.d/firstboot.sh"
-       ]
-     },
-     { "type": "file", "source": "scripts/control/rc.local", "destination": "/tmp/rc.local"},
-     { "type": "shell",
-       "execute_command": "echo  \"{{user `USER_NAME`}}\"|sudo -S sh '{{.Path}}'",
-       "inline": [
-          "mv -f /tmp/rc.local /etc/rc.local",
-          "chown root:root /etc/rc.local",
-          "chmod 755 /etc/rc.local"
-       ]
-     },
-     { "type": "file", "source": "scripts/startup", "destination": "/tmp/startup"},
-     { "type": "shell",
-     "execute_command": "echo  \"{{user `USER_NAME`}}\"|sudo -S sh '{{.Path}}'",
-     "inline": [
-         "mv /tmp/startup /opt/hcoe/",
-         "chown -R root:root /opt/hcoe/*",
-         "chmod -R 755 /opt/hcoe/*"
-         ]
-     },
-     { "type": "shell",
-     "execute_command": "echo  \"{{user `USER_NAME`}}\"|sudo -S sh '{{.Path}}'",
-     "script": "scripts/control/postinstall.sh"
-    }
+        {
+            "type": "shell-local",
+            "command": "rm -f \"{{user `VM_NAME`}}\"\/\"{{user `VM_NAME`}}\".ova\/\"{{user `VM_NAME`}}\".ova"
+        },
+        {
+            "type": "shell",
+            "execute_command": "echo  \"{{user `USER_NAME`}}\"|sudo -S sh '{{.Path}}'",
+            "inline": [
+                "mkdir -p /opt/hcoe/startup",
+                "mkdir -p /opt/hcoe/kubernetes",
+                "mkdir -p /opt/hcoe/agent"
+            ]
+        },
+        {
+            "type": "file", "source": "scripts/control/firstboot.sh", "destination": "/tmp/firstboot.sh"
+        },
+        {
+            "type": "shell",
+            "execute_command": "echo  \"{{user `USER_NAME`}}\"|sudo -S sh '{{.Path}}'",
+            "inline": [
+                "mv /tmp/firstboot.sh /etc/init.d/firstboot.sh",
+                "chown root:root /etc/init.d/firstboot.sh",
+                "chmod 755 /etc/init.d/firstboot.sh"
+            ]
+        },
+        {
+            "type": "file", "source": "scripts/control/subsboot.sh", "destination": "/tmp/subsboot.sh"
+        },
+        {
+            "type": "shell",
+            "execute_command": "echo  \"{{user `USER_NAME`}}\"|sudo -S sh '{{.Path}}'",
+            "inline": [
+                "mv /tmp/subsboot.sh /etc/init.d/subsboot.sh",
+                "chown root:root /etc/init.d/subsboot.sh",
+                "chmod 755 /etc/init.d/subsboot.sh"
+            ]
+        },
+        {
+            "type": "file", "source": "scripts/control/rc.local", "destination": "/tmp/rc.local"
+        },
+        {
+            "type": "shell",
+            "execute_command": "echo  \"{{user `USER_NAME`}}\"|sudo -S sh '{{.Path}}'",
+            "inline": [
+                "mv -f /tmp/rc.local /etc/rc.local",
+                "chown root:root /etc/rc.local",
+                "chmod 755 /etc/rc.local"
+            ]
+        },
+        {
+            "type": "file", "source": "scripts/startup", "destination": "/tmp/startup"
+        },
+        {
+            "type": "shell",
+            "execute_command": "echo  \"{{user `USER_NAME`}}\"|sudo -S sh '{{.Path}}'",
+            "inline": [
+                "mv /tmp/startup /opt/hcoe/",
+                "chown -R root:root /opt/hcoe/*",
+                "chmod -R 755 /opt/hcoe/*"
+            ]
+        },
+        {
+            "type": "shell",
+            "execute_command": "echo  \"{{user `USER_NAME`}}\"|sudo -S sh '{{.Path}}'",
+            "script": "scripts/control/postinstall.sh"
+        }
     ],
     "post-processors": [
-     { "type": "shell-local",
-       "inline": [
-          "ls -ltr \"{{user `VM_NAME`}}\"\/\"{{user `VM_NAME`}}\".ova\/\"{{user `VM_NAME`}}\".ova",
-          "chmod 755 \"{{user `VM_NAME`}}\"\/\"{{user `VM_NAME`}}\".ova\/\"{{user `VM_NAME`}}\".ova"
-        ]
-     },
-     { "type": "vsphere",
-      "host": "ftcwvc10g.ftc.hpeswlab.net",
-      "username": "HPESWLAB\\_bfftcvcusr",
-      "password": "happy.new.year-2016",
-      "datacenter": "HFprod",
-      "cluster": "ftcvhfesx01h.ftc.hpeswlab.net",
-      "datastore": "p02_hfprod_L00",
-      "vm_name": "ubuntu_14.04_64",
-      "insecure": "true",
-      "disk_mode": "thin",
-      "vm_network": "VM Network",
-      "options": [
-         "--powerOn"
-      ]
-    }
+        {
+            "type": "shell-local",
+            "inline": [
+                "ls -ltr \"{{user `VM_NAME`}}\"\/\"{{user `VM_NAME`}}\".ova\/\"{{user `VM_NAME`}}\".ova",
+                "chmod 755 \"{{user `VM_NAME`}}\"\/\"{{user `VM_NAME`}}\".ova\/\"{{user `VM_NAME`}}\".ova"
+            ]
+        },
+        {
+            "type": "vsphere",
+            "host": "{{user `VCENTER_HOST`}}",
+            "username": "{{user `VCENTER_USER`}}",
+            "password": "{{user `VCENTER_PASSWORD`}}",
+            "datacenter": "{{user `DATACENTER_NAME`}}",
+            "cluster": "{{user `ESXi_HOST`}}",
+            "datastore": "{{user `ESXi_DATASTORE`}}",
+            "vm_name": "sanity_ubuntu_14.04_64",
+            "insecure": "true",
+            "disk_mode": "thin",
+            "vm_network": "{{user `ESXi_NETWORK`}}",
+            "options": [
+                "--powerOn"
+            ]
+        }
     ]
 }
